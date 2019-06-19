@@ -17,14 +17,12 @@ var pinHeight = mapPin.offsetHeight + 22;
 // Статус формы объявления
 function statusAdForm(elements, isActive) {
   for (var i = 0; i < elements.length; i++) {
-    elements[i].setAttribute('disabled', '');
     elements[i].disabled = isActive;
   }
 }
 // Статус Фильтров карты
 function statusMapFilters(elements, isActive) {
   for (var i = 0; i < elements.length; i++) {
-    elements[i].setAttribute('disabled', '');
     elements[i].disabled = isActive;
   }
 }
