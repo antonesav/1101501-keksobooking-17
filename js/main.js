@@ -15,23 +15,17 @@ var pinWidth = mapPin.offsetWidth;
 var pinHeight = mapPin.offsetHeight + 22;
 
 // Статус формы объявления
-function statusAdForm(element, isActive) {
-  for (var i = 0; i < element.length; i++) {
-    if (isActive) {
-      element[i].removeAttribute('disabled');
-    } else {
-      element[i].setAttribute('disabled', '');
-    }
+function statusAdForm(elements, isActive) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].setAttribute('disabled', '');
+    elements[i].disabled = isActive;
   }
 }
 // Статус Фильтров карты
-function statusMapFilters(element, isActive) {
-  for (var i = 0; i < element.length; i++) {
-    if (isActive) {
-      element[i].removeAttribute('disabled');
-    } else {
-      element[i].setAttribute('disabled', '');
-    }
+function statusMapFilters(elements, isActive) {
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].setAttribute('disabled', '');
+    elements[i].disabled = isActive;
   }
 }
 
@@ -39,16 +33,16 @@ function statusMapFilters(element, isActive) {
 function disabledApp() {
   mapBlock.classList.add('map--faded');
   adForm.classList.add('ad-form--disabled');
-  statusAdForm(elementsAdForm, false);
-  statusMapFilters(elementsMapFilters, false);
+  statusAdForm(elementsAdForm, true);
+  statusMapFilters(elementsMapFilters, true);
 }
 
 // Активация приложения
 function activatedApp() {
   mapBlock.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
-  statusAdForm(elementsAdForm, true);
-  statusMapFilters(elementsMapFilters, true);
+  statusAdForm(elementsAdForm, false);
+  statusMapFilters(elementsMapFilters, false);
 }
 
 // Генерация рандомного числа для от min до max включительно
@@ -83,7 +77,7 @@ for (var i = 0; i < COUNT_ARRAY; i++) {
   });
 }
 
-var pinblock = document.querySelector('.map__pins');
+var pinBlock = document.querySelector('.map__pins');
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 var fragment = document.createDocumentFragment();
 
@@ -102,7 +96,7 @@ function renderFragmentAds() {
   for (var j = 0; j < adsArray.length; j++) {
     fragment.appendChild(renderAds(adsArray[j]));
   }
-  pinblock.appendChild(fragment);
+  pinBlock.appendChild(fragment);
 }
 
 // Вычисление координат пина
