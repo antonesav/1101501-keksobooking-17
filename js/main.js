@@ -1,6 +1,6 @@
 'use strict';
 var COUNT_ARRAY = 8;
-var OFFER_TYPES = ['place', 'flat', 'house', 'bungalo'];
+var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var MIN_MAP_Y = 130;
 var MAX_MAP_Y = 630;
 var adsArray = [];
@@ -13,6 +13,12 @@ var mapPin = document.querySelector('.map__pin--main');
 var mapWidth = mapBlock.offsetWidth;
 var pinWidth = mapPin.offsetWidth;
 var pinHeight = mapPin.offsetHeight + 22;
+// var adFormTitle = adForm.querySelector('#title');
+var adFormPrice = adForm.querySelector('#price');
+var adFormType = adForm.querySelector('#type');
+var adFormAddress = adForm.querySelector('#address');
+var adFormTimeIn = adForm.querySelector('#timein');
+var adFormTimeOut = adForm.querySelector('#timeout');
 
 // Статус формы объявления
 function statusAdForm(elements, isActive) {
@@ -41,6 +47,7 @@ function activatedApp() {
   adForm.classList.remove('ad-form--disabled');
   statusAdForm(elementsAdForm, false);
   statusMapFilters(elementsMapFilters, false);
+  adFormAddress.disabled = true;
 }
 
 // Генерация рандомного числа для от min до max включительно
@@ -110,11 +117,53 @@ function setAddress(coordinate) {
   addressInput.value = coordinate.x + ', ' + coordinate.y;
 }
 
+// Выбор типа жилья и выведение минимальной стоимости за ночь
+function offerTypeSelectHandler() {
+  var valueType;
+  var minPriceOfNight;
+  valueType = adFormType.selectedOptions[0].value;
+  switch (valueType) {
+    case OFFER_TYPES[0]:
+      minPriceOfNight = 10000;
+      break;
+    case OFFER_TYPES[1]:
+      minPriceOfNight = 1000;
+      break;
+    case OFFER_TYPES[2]:
+      minPriceOfNight = 5000;
+      break;
+    case OFFER_TYPES[3]:
+      minPriceOfNight = 0;
+      break;
+    default:
+      minPriceOfNight = 0;
+  }
+  adFormPrice.setAttribute('min', '' + minPriceOfNight);
+  adFormPrice.setAttribute('placeholder', '' + minPriceOfNight);
+}
+
+// Прослушка выбора времени заезда с изменением времени выезда
+function offerChangeTimeInHandler() {
+  var optionsTimeOut = adFormTimeOut.querySelectorAll('option');
+  var timeInSelectIndex = adFormTimeIn.selectedIndex;
+  optionsTimeOut[timeInSelectIndex].selected = true;
+}
+
+// Прослушка выбора времени выезда с изменением времени заезда
+function offerChangeTimeOutHandler() {
+  var optionsTimeIn = adFormTimeIn.querySelectorAll('option');
+  var timeOutSelectIndex = adFormTimeOut.selectedIndex;
+  optionsTimeIn[timeOutSelectIndex].selected = true;
+}
+
 // Обработчик клика на пин main
 var mapPinMainClickHandler = function () {
   activatedApp();
   setAddress(getMainPinCoordinate(mapPin, pinWidth, pinHeight));
   renderFragmentAds();
+  adFormType.addEventListener('change', offerTypeSelectHandler);
+  adFormTimeIn.addEventListener('change', offerChangeTimeInHandler);
+  adFormTimeOut.addEventListener('change', offerChangeTimeOutHandler);
 };
 
 // Инициализация
