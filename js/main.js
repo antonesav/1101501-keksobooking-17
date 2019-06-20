@@ -1,6 +1,11 @@
 'use strict';
 var COUNT_ARRAY = 8;
-var OFFER_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var OFFER_TYPES = {
+  palace: 10000,
+  flat: 1000,
+  house: 5000,
+  bungalo: 0
+};
 var MIN_MAP_Y = 130;
 var MAX_MAP_Y = 630;
 var adsArray = [];
@@ -47,7 +52,6 @@ function activatedApp() {
   adForm.classList.remove('ad-form--disabled');
   statusAdForm(elementsAdForm, false);
   statusMapFilters(elementsMapFilters, false);
-  adFormAddress.disabled = true;
 }
 
 // Генерация рандомного числа для от min до max включительно
@@ -64,8 +68,10 @@ function getImagePath(number) {
 }
 
 // Генерация типа offer
-function getOfferType(typeOfferArr, randomNumber) {
-  return {type: typeOfferArr[randomNumber]};
+function getOfferType(typeOfferArr) {
+  var typeObject = Object.keys(typeOfferArr);
+  var typeIndex = getRandomNumber(0, typeObject.length - 1);
+  return {type: typeObject[typeIndex]};
 }
 
 // Генерация координат X, Y
@@ -77,7 +83,7 @@ function getCoordinatePinXY(widthMap, widthPin, minY, maxY) {
 for (var i = 0; i < COUNT_ARRAY; i++) {
   adsArray.push({
     author: getImagePath(i + 1),
-    offer: getOfferType(OFFER_TYPES, getRandomNumber(0, OFFER_TYPES.length - 1)),
+    offer: getOfferType(OFFER_TYPES),
     location: getCoordinatePinXY(mapWidth, pinWidth, MIN_MAP_Y, MAX_MAP_Y)
   });
 }
@@ -113,33 +119,16 @@ function getMainPinCoordinate(pin, widthPin, heightPin) {
 
 // Изменение значения поля адресса
 function setAddress(coordinate) {
-  var addressInput = document.querySelector('#address');
-  addressInput.value = coordinate.x + ', ' + coordinate.y;
+  adFormAddress.value = coordinate.x + ', ' + coordinate.y;
 }
 
 // Выбор типа жилья и выведение минимальной стоимости за ночь
 function offerTypeSelectHandler() {
-  var valueType;
   var minPriceOfNight;
-  valueType = adFormType.selectedOptions[0].value;
-  switch (valueType) {
-    case OFFER_TYPES[0]:
-      minPriceOfNight = 10000;
-      break;
-    case OFFER_TYPES[1]:
-      minPriceOfNight = 1000;
-      break;
-    case OFFER_TYPES[2]:
-      minPriceOfNight = 5000;
-      break;
-    case OFFER_TYPES[3]:
-      minPriceOfNight = 0;
-      break;
-    default:
-      minPriceOfNight = 0;
-  }
-  adFormPrice.setAttribute('min', '' + minPriceOfNight);
-  adFormPrice.setAttribute('placeholder', '' + minPriceOfNight);
+  var valueType = adFormType.selectedOptions[0].value;
+  minPriceOfNight = OFFER_TYPES['' + valueType];
+  adFormPrice.min = minPriceOfNight;
+  adFormPrice.placeholder = minPriceOfNight;
 }
 
 // Прослушка выбора времени заезда с изменением времени выезда
