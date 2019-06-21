@@ -123,10 +123,10 @@ function setAddress(coordinate) {
 }
 
 // Выбор типа жилья и выведение минимальной стоимости за ночь
-function offerTypeSelectHandler() {
+function offerTypeSelectHandler(evt) {
   var minPriceOfNight;
-  var valueType = adFormType.selectedOptions[0].value;
-  minPriceOfNight = OFFER_TYPES['' + valueType];
+  var valueType = evt.target.value;
+  minPriceOfNight = OFFER_TYPES[valueType];
   adFormPrice.min = minPriceOfNight;
   adFormPrice.placeholder = minPriceOfNight;
 }
