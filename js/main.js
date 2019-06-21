@@ -1,6 +1,11 @@
 'use strict';
 var COUNT_ARRAY = 8;
-var OFFER_TYPES = ['place', 'flat', 'house', 'bungalo'];
+var OFFER_TYPES = {
+  palace: 10000,
+  flat: 1000,
+  house: 5000,
+  bungalo: 0
+};
 var MIN_MAP_Y = 130;
 var MAX_MAP_Y = 630;
 var adsArray = [];
@@ -13,6 +18,12 @@ var mapPin = document.querySelector('.map__pin--main');
 var mapWidth = mapBlock.offsetWidth;
 var pinWidth = mapPin.offsetWidth;
 var pinHeight = mapPin.offsetHeight + 22;
+// var adFormTitle = adForm.querySelector('#title');
+var adFormPrice = adForm.querySelector('#price');
+var adFormType = adForm.querySelector('#type');
+var adFormAddress = adForm.querySelector('#address');
+var adFormTimeIn = adForm.querySelector('#timein');
+var adFormTimeOut = adForm.querySelector('#timeout');
 
 // Статус формы объявления
 function statusAdForm(elements, isActive) {
@@ -57,8 +68,10 @@ function getImagePath(number) {
 }
 
 // Генерация типа offer
-function getOfferType(typeOfferArr, randomNumber) {
-  return {type: typeOfferArr[randomNumber]};
+function getOfferType(typeOfferArr) {
+  var typeObject = Object.keys(typeOfferArr);
+  var typeIndex = getRandomNumber(0, typeObject.length - 1);
+  return {type: typeObject[typeIndex]};
 }
 
 // Генерация координат X, Y
@@ -70,7 +83,7 @@ function getCoordinatePinXY(widthMap, widthPin, minY, maxY) {
 for (var i = 0; i < COUNT_ARRAY; i++) {
   adsArray.push({
     author: getImagePath(i + 1),
-    offer: getOfferType(OFFER_TYPES, getRandomNumber(0, OFFER_TYPES.length - 1)),
+    offer: getOfferType(OFFER_TYPES),
     location: getCoordinatePinXY(mapWidth, pinWidth, MIN_MAP_Y, MAX_MAP_Y)
   });
 }
@@ -106,8 +119,30 @@ function getMainPinCoordinate(pin, widthPin, heightPin) {
 
 // Изменение значения поля адресса
 function setAddress(coordinate) {
-  var addressInput = document.querySelector('#address');
-  addressInput.value = coordinate.x + ', ' + coordinate.y;
+  adFormAddress.value = coordinate.x + ', ' + coordinate.y;
+}
+
+// Выбор типа жилья и выведение минимальной стоимости за ночь
+function offerTypeSelectHandler(evt) {
+  var minPriceOfNight;
+  var valueType = evt.target.value;
+  minPriceOfNight = OFFER_TYPES[valueType];
+  adFormPrice.min = minPriceOfNight;
+  adFormPrice.placeholder = minPriceOfNight;
+}
+
+// Прослушка выбора времени заезда с изменением времени выезда
+function offerChangeTimeInHandler() {
+  var optionsTimeOut = adFormTimeOut.querySelectorAll('option');
+  var timeInSelectIndex = adFormTimeIn.selectedIndex;
+  optionsTimeOut[timeInSelectIndex].selected = true;
+}
+
+// Прослушка выбора времени выезда с изменением времени заезда
+function offerChangeTimeOutHandler() {
+  var optionsTimeIn = adFormTimeIn.querySelectorAll('option');
+  var timeOutSelectIndex = adFormTimeOut.selectedIndex;
+  optionsTimeIn[timeOutSelectIndex].selected = true;
 }
 
 // Обработчик клика на пин main
@@ -115,6 +150,9 @@ var mapPinMainClickHandler = function () {
   activatedApp();
   setAddress(getMainPinCoordinate(mapPin, pinWidth, pinHeight));
   renderFragmentAds();
+  adFormType.addEventListener('change', offerTypeSelectHandler);
+  adFormTimeIn.addEventListener('change', offerChangeTimeInHandler);
+  adFormTimeOut.addEventListener('change', offerChangeTimeOutHandler);
 };
 
 // Инициализация
