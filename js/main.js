@@ -18,7 +18,6 @@ var mapPin = document.querySelector('.map__pin--main');
 var mapWidth = mapBlock.offsetWidth;
 var pinWidth = mapPin.offsetWidth;
 var pinHeight = mapPin.offsetHeight + 22;
-// var adFormTitle = adForm.querySelector('#title');
 var adFormPrice = adForm.querySelector('#price');
 var adFormType = adForm.querySelector('#type');
 var adFormAddress = adForm.querySelector('#address');
@@ -36,22 +35,6 @@ function statusMapFilters(elements, isActive) {
   for (var i = 0; i < elements.length; i++) {
     elements[i].disabled = isActive;
   }
-}
-
-// Деактивация приложеия
-function disabledApp() {
-  mapBlock.classList.add('map--faded');
-  adForm.classList.add('ad-form--disabled');
-  statusAdForm(elementsAdForm, true);
-  statusMapFilters(elementsMapFilters, true);
-}
-
-// Активация приложения
-function activatedApp() {
-  mapBlock.classList.remove('map--faded');
-  adForm.classList.remove('ad-form--disabled');
-  statusAdForm(elementsAdForm, false);
-  statusMapFilters(elementsMapFilters, false);
 }
 
 // Генерация рандомного числа для от min до max включительно
@@ -145,20 +128,70 @@ function offerChangeTimeOutHandler() {
   optionsTimeIn[timeOutSelectIndex].selected = true;
 }
 
-// Обработчик клика на пин main
-var mapPinMainClickHandler = function () {
-  activatedApp();
-  setAddress(getMainPinCoordinate(mapPin, pinWidth, pinHeight));
-  renderFragmentAds();
+// Деактивация приложеия
+function disabledApp() {
+  mapBlock.classList.add('map--faded');
+  adForm.classList.add('ad-form--disabled');
+  statusAdForm(elementsAdForm, true);
+  statusMapFilters(elementsMapFilters, true);
+}
+
+// Активация приложения
+function activatedApp() {
+  mapBlock.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  statusAdForm(elementsAdForm, false);
+  statusMapFilters(elementsMapFilters, false);
   adFormType.addEventListener('change', offerTypeSelectHandler);
   adFormTimeIn.addEventListener('change', offerChangeTimeInHandler);
   adFormTimeOut.addEventListener('change', offerChangeTimeOutHandler);
-};
+}
+
+// Слушатель нажатия на пин
+function mouseDownHandler(evt) {
+  evt.preventDefault();
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+  // Перетаскивание пина
+  function mouseMoveHandler(evtMove) {
+    evtMove.preventDefault();
+    var shift = {
+      x: startCoords.x - evtMove.clientX,
+      y: startCoords.y - evtMove.clientY
+    };
+    startCoords = {
+      x: evtMove.clientX,
+      y: evtMove.clientY
+    };
+    var currentX = mapPin.offsetLeft - shift.x;
+    var currentY = mapPin.offsetTop - shift.y;
+    if (mapWidth - pinWidth > currentX && currentX > 0) {
+      mapPin.style.left = currentX + 'px';
+    }
+    if (MAX_MAP_Y > currentY && currentY > MIN_MAP_Y) {
+      mapPin.style.top = currentY + 'px';
+    }
+  }
+  // Слушаем mouseUp, отменяем события перетаскивания, активируем страницу
+  function mouseUpHandler(evtUp) {
+    evtUp.preventDefault();
+    activatedApp();
+    renderFragmentAds();
+    setAddress(getMainPinCoordinate(mapPin, pinWidth, pinHeight));
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+  }
+
+  document.addEventListener('mousemove', mouseMoveHandler);
+  document.addEventListener('mouseup', mouseUpHandler);
+}
 
 // Инициализация
 function initApp() {
   disabledApp();
-  mapPin.addEventListener('mouseup', mapPinMainClickHandler);
+  mapPin.addEventListener('mousedown', mouseDownHandler);
 }
 
 initApp();
