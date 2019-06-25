@@ -15,4 +15,9 @@
   window.pinWidth = window.mapPin.offsetWidth;
   window.pinHeight = window.mapPin.offsetHeight + 22;
   window.adForm = document.querySelector('.ad-form');
+  window.mapFilters = document.querySelector('.map__filters');
+  window.elementsMapFilters = window.mapFilters.querySelectorAll('input, select, fieldset');
+  window.elementsAdForm = window.adForm.querySelectorAll('fieldset');
+  window.adFormTimeIn = window.adForm.querySelector('#timein');
+  window.adFormTimeOut = window.adForm.querySelector('#timeout');
 })();

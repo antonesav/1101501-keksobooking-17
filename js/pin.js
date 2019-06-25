@@ -1,13 +1,14 @@
 'use strict';
 (function () {
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var adFormType = window.adForm.querySelector('#type');
 
   // Заполнение указателей
   window.renderAds = function (ad) {
     var pinElem = pinTemplate.cloneNode(true);
-    pinElem.style.left = '' + ad.location.x + 'px';
-    pinElem.style.top = '' + ad.location.y + 'px';
-    pinElem.querySelector('img').src = '' + ad.author.avatar + '';
+    pinElem.style.left = ad.location.x + 'px';
+    pinElem.style.top = ad.location.y + 'px';
+    pinElem.querySelector('img').src = ad.author.avatar;
     pinElem.querySelector('img').alt = 'заголовок объявления';
     return pinElem;
   };
@@ -17,6 +18,22 @@
     var coordinateX = Math.round(pin.offsetLeft + (widthPin / 2));
     var coordinateY = Math.round(pin.offsetTop + heightPin);
     return {x: coordinateX, y: coordinateY};
+  };
+  // Приложение : активация,инициализация
+  window.app = {
+    activate: function () {
+      window.mapBlock.classList.remove('map--faded');
+      window.adForm.classList.remove('ad-form--disabled');
+      window.statusAdForm(window.elementsAdForm, false);
+      window.statusMapFilters(window.elementsMapFilters, false);
+      adFormType.addEventListener('change', window.offerTypeSelectHandler);
+      window.adFormTimeIn.addEventListener('change', window.offerCheckInHandler);
+      window.adFormTimeOut.addEventListener('change', window.offerCheckOutHandler);
+    },
+    init: function () {
+      window.disabledApp();
+      window.mapPin.addEventListener('mousedown', window.mouseDownHandler);
+    }
   };
   // Слушатель нажатия на пин
   window.mouseDownHandler = function (evt) {
@@ -48,7 +65,7 @@
     // Слушаем mouseUp, отменяем события перетаскивания, активируем страницу
     function mouseUpHandler(evtUp) {
       evtUp.preventDefault();
-      window.activatedApp();
+      window.app.activate();
       window.renderFragmentAds();
       window.setAddress(window.getMainPinCoordinate(window.mapPin, window.pinWidth, window.pinHeight));
       document.removeEventListener('mousemove', mouseMoveHandler);
@@ -58,5 +75,5 @@
     document.addEventListener('mousemove', mouseMoveHandler);
     document.addEventListener('mouseup', mouseUpHandler);
   };
-  window.initApp();
+  window.app.init();
 })();
