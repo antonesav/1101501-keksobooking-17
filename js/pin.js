@@ -1,42 +1,18 @@
 'use strict';
 (function () {
-  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-  var adFormType = window.adForm.querySelector('#type');
-
-  // Заполнение указателей
-  window.renderAds = function (ad) {
-    var pinElem = pinTemplate.cloneNode(true);
-    pinElem.style.left = ad.location.x + 'px';
-    pinElem.style.top = ad.location.y + 'px';
-    pinElem.querySelector('img').src = ad.author.avatar;
-    pinElem.querySelector('img').alt = 'заголовок объявления';
-    return pinElem;
-  };
-
+  var mapPin = document.querySelector('.map__pin--main');
+  var mapBlock = document.querySelector('.map');
+  var mapWidth = mapBlock.offsetWidth;
+  var pinWidth = mapPin.offsetWidth;
+  var pinHeight = mapPin.offsetHeight + 22;
   // Вычисление координат пина
-  window.getMainPinCoordinate = function (pin, widthPin, heightPin) {
+  function getMainPinCoordinate(pin, widthPin, heightPin) {
     var coordinateX = Math.round(pin.offsetLeft + (widthPin / 2));
     var coordinateY = Math.round(pin.offsetTop + heightPin);
     return {x: coordinateX, y: coordinateY};
-  };
-  // Приложение : активация,инициализация
-  window.app = {
-    activate: function () {
-      window.mapBlock.classList.remove('map--faded');
-      window.adForm.classList.remove('ad-form--disabled');
-      window.statusAdForm(window.elementsAdForm, false);
-      window.statusMapFilters(window.elementsMapFilters, false);
-      adFormType.addEventListener('change', window.offerTypeSelectHandler);
-      window.adFormTimeIn.addEventListener('change', window.offerCheckInHandler);
-      window.adFormTimeOut.addEventListener('change', window.offerCheckOutHandler);
-    },
-    init: function () {
-      window.disabledApp();
-      window.mapPin.addEventListener('mousedown', window.mouseDownHandler);
-    }
-  };
+  }
   // Слушатель нажатия на пин
-  window.mouseDownHandler = function (evt) {
+  var onPinMouseDownHandler = function (evt) {
     evt.preventDefault();
     var startCoords = {
       x: evt.clientX,
@@ -53,21 +29,22 @@
         x: evtMove.clientX,
         y: evtMove.clientY
       };
-      var currentX = window.mapPin.offsetLeft - shift.x;
-      var currentY = window.mapPin.offsetTop - shift.y;
-      if (window.mapWidth - window.pinWidth > currentX && currentX > 0) {
-        window.mapPin.style.left = currentX + 'px';
+      var currentX = mapPin.offsetLeft - shift.x;
+      var currentY = mapPin.offsetTop - shift.y;
+      if (mapWidth - pinWidth > currentX && currentX > 0) {
+        mapPin.style.left = currentX + 'px';
       }
-      if (window.MAX_MAP_Y > currentY && currentY > window.MIN_MAP_Y) {
-        window.mapPin.style.top = currentY + 'px';
+      if (window.globalUtils.MAX_MAP_Y > currentY && currentY > window.globalUtils.MIN_MAP_Y) {
+        mapPin.style.top = currentY + 'px';
       }
     }
+
     // Слушаем mouseUp, отменяем события перетаскивания, активируем страницу
     function mouseUpHandler(evtUp) {
       evtUp.preventDefault();
-      window.app.activate();
-      window.renderFragmentAds();
-      window.setAddress(window.getMainPinCoordinate(window.mapPin, window.pinWidth, window.pinHeight));
+      window.formUtils.activate();
+      window.cardUtils.renderFragmentAds();
+      window.formUtils.setAddress(getMainPinCoordinate(mapPin, pinWidth, pinHeight));
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);
     }
@@ -75,5 +52,9 @@
     document.addEventListener('mousemove', mouseMoveHandler);
     document.addEventListener('mouseup', mouseUpHandler);
   };
-  window.app.init();
+  function initApp() {
+    window.formUtils.disabled();
+    mapPin.addEventListener('mousedown', onPinMouseDownHandler);
+  }
+  initApp();
 })();
