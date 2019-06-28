@@ -58,4 +58,13 @@
       adFormAddress.value = coordinate.x + ', ' + coordinate.y;
     }
   };
+  var fragment = document.createDocumentFragment();
+  var errTemplateUpload = document.querySelector('#error').content.querySelector('.error');
+
+  adForm.addEventListener('submit', function (evt) {
+    window.uploadUtils.upload(new FormData(adForm), function (response) {
+      console.log(response);
+    });
+    evt.preventDefault();
+  });
 })();
