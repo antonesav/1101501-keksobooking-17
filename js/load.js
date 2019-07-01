@@ -18,7 +18,7 @@
       xhr.addEventListener('timeout', function () {
         onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
       });
-      xhr.timeout = 10000;
+      xhr.timeout = window.globalUtils.XHR_TIMEOUT;
       xhr.open('GET', window.loadUtils.url);
       xhr.send();
     }

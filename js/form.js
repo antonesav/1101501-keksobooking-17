@@ -70,7 +70,7 @@
     mainBlock.appendChild(popup);
 
     function closeEscPopupHandler(evt) {
-      if (evt.keyCode === 27) {
+      if (evt.keyCode === window.globalUtils.ESC_KEYCODE) {
         mainBlock.removeChild(popup);
         document.removeEventListener('keydown', closeEscPopupHandler);
         document.removeEventListener('click', anyClickPopupHandler);
@@ -100,26 +100,12 @@
     renderMessage(successTemplateUpload);
   }
 
-  function errorPost(errorElem) {
-    var elem = errorElem.reduce(function (acc, item) {
-      if (item.fieldName) {
-        acc = item.fieldName;
-      }
-      return acc;
-    }, 0);
-    errorElemStyle(elem);
-  }
-
-  function errorElemStyle(name) {
-    var node = document.querySelector('[name=' + name + ']');
-    node.style.boxShadow = '0 0 5px 1px red';
+  function errorPost() {
+    renderMessage(errTemplateUpload);
   }
 
   adForm.addEventListener('submit', function (evt) {
-    window.uploadUtils.upload(new FormData(adForm), successPost, function (response) {
-      renderMessage(errTemplateUpload);
-      errorPost(response);
-    });
+    window.uploadUtils.upload(new FormData(adForm), successPost, errorPost);
     evt.preventDefault();
   });
 })();
