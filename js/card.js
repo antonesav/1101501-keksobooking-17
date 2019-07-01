@@ -9,9 +9,6 @@
     }
     pinBlock.appendChild(fragment);
   }
-  function err(erR) {
-    alert(erR);
-  }
   // Заполнение указателей
   window.cardUtils = {
     renderAds: function (ad) {
@@ -23,7 +20,7 @@
       return pinElem;
     },
     renderFragmentAds: function () {
-      window.loadUtils.load(successLoadHandler, err);
+      window.loadUtils.load(successLoadHandler);
     }
   };
 })();
