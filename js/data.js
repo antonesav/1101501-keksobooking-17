@@ -10,6 +10,7 @@
     MIN_MAP_Y: 130,
     MAX_MAP_Y: 630,
     ESC_KEYCODE: 27,
-    XHR_TIMEOUT: 10000
+    XHR_TIMEOUT: 10000,
+    saveAdsArray: []
   };
 })();
