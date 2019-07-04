@@ -7,9 +7,11 @@
       house: 5000,
       bungalo: 0
     },
+    copyAdsArray: [],
     MIN_MAP_Y: 130,
     MAX_MAP_Y: 630,
     ESC_KEYCODE: 27,
-    XHR_TIMEOUT: 10000
+    XHR_TIMEOUT: 10000,
+    pinBlock: document.querySelector('.map__pins')
   };
 })();
