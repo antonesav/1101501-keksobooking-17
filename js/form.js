@@ -13,15 +13,6 @@
   var fragment = document.createDocumentFragment();
   var errTemplateUpload = document.querySelector('#error').content.querySelector('.error');
   var successTemplateUpload = document.querySelector('#success').content.querySelector('.success');
-  // Фильтры
-  var housingType = document.querySelector('#housing-type');
-  var housingPrice = document.querySelector('#housing-price');
-  var housingRooms = document.querySelector('#housing-rooms');
-  var housingGuests = document.querySelector('#housing-guests');
-
-  housingType.addEventListener('select', function (evt) {
-    var type = housingType.value;
-  });
 
   // Статус формы объявления
   var statusAdForm = function (elements, isActive) {
