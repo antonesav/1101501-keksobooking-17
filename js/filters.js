@@ -4,33 +4,25 @@
   var mapPin = document.querySelector('.map__pin--main');
   var filterParams = {};
   var checkedFeatures = {};
-  // hi
 
   function housingChangeHandler(evt) {
     var name = evt.target.name;
     filterParams[name] = evt.target.value;
-    filterOffers(window.globalUtils.copyAdsArray, name, filterParams[name]);
+    renderCollectFilters(window.globalUtils.copyAdsArray, name, filterParams[name]);
   }
 
-  function filterOffers(array, name, paramValue) {
-    var initialAds = array;
-    var filteredAds;
-
-    filteredAds = initialAds.filter(function (item) {
+  // фильтрация housing
+  function filterOffers(array, name) {
+    return array.filter(function (item) {
       if (filterParams[name] === 'any') {
         return item;
       }
       return item.offer[name].toString() === filterParams[name];
     });
-
-    if (filterParams.features) {
-      filteredAds = getCheckedFeatures(array, paramValue);
-    }
-
-    removePinBlockChild();
-    window.cardUtils.renderAds(filteredAds);
+    // console.log(filteredAds);
   }
 
+  // фильтрация features
   function getCheckedFeatures(array, valueElement) {
     var checkedFeatureElements = [];
 
@@ -49,8 +41,18 @@
         checkedFeatureElements.push(elem);
       }
     });
-    return checkedFeatureElements;
     // console.log(checkedFeatureElements);
+    return checkedFeatureElements;
+  }
+
+  function collectFilters(array, name, paramValue) {
+    return filterOffers(array, name) && getCheckedFeatures(array, paramValue);
+  }
+
+  function renderCollectFilters(arrayAds, nameElement, valueElement) {
+    removePinBlockChild();
+    console.log(collectFilters(arrayAds, nameElement, valueElement));
+    window.cardUtils.renderAds(collectFilters(arrayAds, nameElement, valueElement));
   }
 
   filtersBlock.addEventListener('change', housingChangeHandler);
