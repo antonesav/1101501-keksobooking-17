@@ -13,13 +13,13 @@
 
   // фильтрация housing
   function filterOffers(array, name) {
+    console.log(array);
     return array.filter(function (item) {
       if (filterParams[name] === 'any') {
         return item;
       }
       return item.offer[name].toString() === filterParams[name];
     });
-    // console.log(filteredAds);
   }
 
   // фильтрация features
@@ -41,17 +41,15 @@
         checkedFeatureElements.push(elem);
       }
     });
-    // console.log(checkedFeatureElements);
     return checkedFeatureElements;
   }
 
   function collectFilters(array, name, paramValue) {
-    return filterOffers(array, name) && getCheckedFeatures(array, paramValue);
+    return filterOffers(array, name).concat(getCheckedFeatures(array, paramValue));
   }
 
   function renderCollectFilters(arrayAds, nameElement, valueElement) {
     removePinBlockChild();
-    console.log(collectFilters(arrayAds, nameElement, valueElement));
     window.cardUtils.renderAds(collectFilters(arrayAds, nameElement, valueElement));
   }
 
