@@ -42,13 +42,12 @@
     });
     return checkedFeatureElements;
   }
-
+  // Не понятно,как с этим работать
   function collectFilters(array, name, paramValue) {
     return filterOffers(array, name).concat(getCheckedFeatures(array, paramValue));
   }
 
   function renderCollectFilters(arrayAds, nameElement, valueElement) {
-    window.cardUtils.renderCard(arrayAds[4]);
     removePinBlockChild();
     window.cardUtils.renderAds(collectFilters(arrayAds, nameElement, valueElement));
   }

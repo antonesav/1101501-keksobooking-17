@@ -9,10 +9,51 @@
   var adFormAddress = document.querySelector('#address');
   var adFormTimeIn = document.querySelector('#timein');
   var adFormTimeOut = document.querySelector('#timeout');
+  var adFormCapacity = adForm.querySelector('#capacity');
+  var adFormRoomNumbers = adForm.querySelector('#room_number');
   var mainBlock = document.querySelector('main');
   var fragment = document.createDocumentFragment();
   var errTemplateUpload = document.querySelector('#error').content.querySelector('.error');
   var successTemplateUpload = document.querySelector('#success').content.querySelector('.success');
+  var ValidMessages = {
+    ERROR_MESSAGE0: 'Количество мест "не для гостей" соответствует количеству комнат в "100"',
+    ERROR_MESSAGE1: 'В 1 комнате размещается только 1 гость',
+    ERROR_MESSAGE2: 'В 2 комнатах размещается не более двух гостей',
+    ERROR_LIMIT: 'Количество гостей больше количества комнат'
+  };
+
+  var CustomValidity = function () { };
+  CustomValidity.prototype = {
+    invalidity: [],
+    checkValidityCapacity: function (capacity, rooms) {
+      var roomValue = rooms.value;
+      if ((roomValue !== '100' && capacity.value === '0') || (roomValue === '100' && capacity.value !== '0')) {
+        this.addInvalidity(ValidMessages.ERROR_MESSAGE0);
+      } else if (capacity.value > roomValue) {
+        this.addInvalidity(ValidMessages['ERROR_MESSAGE' + roomValue] || ValidMessages.ERROR_LIMIT);
+      }
+    },
+    addInvalidity: function (message) {
+      this.invalidity.push(message);
+    },
+    getInvalidity: function () {
+      return this.invalidity.join('. \n');
+    }
+  };
+
+  var capacityHandler = function () {
+    var customValidation = new CustomValidity();
+    customValidation.invalidity = [];
+    adFormCapacity.setCustomValidity('');
+    customValidation.checkValidityCapacity(adFormCapacity, adFormRoomNumbers);
+    var customValidityMessage = customValidation.getInvalidity();
+    if (customValidityMessage) {
+      adFormCapacity.setCustomValidity(customValidityMessage);
+    }
+  };
+
+  adFormCapacity.addEventListener('change', capacityHandler);
+  adFormRoomNumbers.addEventListener('change', capacityHandler);
 
   // Статус формы объявления
   var statusAdForm = function (elements, isActive) {
