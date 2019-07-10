@@ -2,6 +2,7 @@
 (function () {
   var filtersBlock = document.querySelector('.map__filters');
   var mapPin = document.querySelector('.map__pin--main');
+  var mainOverlay = document.querySelector('.map__overlay');
   var filterParams = {};
   var checkedFeatures = {};
 
@@ -56,7 +57,7 @@
 
   function removePinBlockChild() {
     Array.from(window.globalUtils.pinBlock.children).forEach(function (pinNode) {
-      if (pinNode !== mapPin) {
+      if (pinNode !== mapPin && pinNode !== mainOverlay) {
         window.globalUtils.pinBlock.removeChild(pinNode);
       }
     });

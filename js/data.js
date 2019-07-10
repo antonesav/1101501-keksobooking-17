@@ -12,6 +12,7 @@
     MAX_MAP_Y: 630,
     ESC_KEYCODE: 27,
     XHR_TIMEOUT: 10000,
+    MAIN_PIN_START_COORDS: {},
     pinBlock: document.querySelector('.map__pins')
   };
 })();

@@ -6,6 +6,11 @@
   var mapWidth = mapBlock.offsetWidth;
   var pinWidth = mapPin.offsetWidth;
   var pinHeight = mapPin.offsetHeight + 22;
+  window.globalUtils.MAIN_PIN_START_COORDS = {
+    x: mapPin.style.left,
+    y: mapPin.style.top
+  };
+
   // Вычисление координат пина
   function getMainPinCoordinate(pin, widthPin, heightPin) {
     var coordinateX = Math.round(pin.offsetLeft + (widthPin / 2));

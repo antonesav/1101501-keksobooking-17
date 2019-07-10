@@ -1,6 +1,7 @@
 'use strict';
 (function () {
   var elementsMapFilters = document.querySelectorAll('.map__filters input, select, fieldset');
+  var mapPin = document.querySelector('.map__pin--main');
   var mapBlock = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
   var elementsAdForm = document.querySelectorAll('.ad-form fieldset');
@@ -12,6 +13,7 @@
   var adFormCapacity = adForm.querySelector('#capacity');
   var adFormRoomNumbers = adForm.querySelector('#room_number');
   var mainBlock = document.querySelector('main');
+  var mainOverlay = document.querySelector('.map__overlay');
   var fragment = document.createDocumentFragment();
   var errTemplateUpload = document.querySelector('#error').content.querySelector('.error');
   var successTemplateUpload = document.querySelector('#success').content.querySelector('.success');
@@ -105,6 +107,24 @@
     }
   };
 
+  function resetApp(mainPin, overlay) {
+    var card = mapBlock.querySelector('.map__card');
+    mapBlock.removeChild(card);
+
+    window.formUtils.disabled();
+
+    adForm.reset();
+
+    mainPin.style.left = window.globalUtils.MAIN_PIN_START_COORDS.x;
+    mainPin.style.top = window.globalUtils.MAIN_PIN_START_COORDS.y;
+
+    Array.from(window.globalUtils.pinBlock.children).forEach(function (pinNode) {
+      if (pinNode !== mainPin && pinNode !== overlay) {
+        window.globalUtils.pinBlock.removeChild(pinNode);
+      }
+    });
+  }
+
   function renderMessage(template) {
     var clonePopup = template.cloneNode(true);
     var popup = fragment.appendChild(clonePopup);
@@ -120,6 +140,9 @@
     }
 
     function anyClickPopupHandler() {
+      if (template === successTemplateUpload) {
+        resetApp(mapPin, mainOverlay);
+      }
       mainBlock.removeChild(popup);
       document.removeEventListener('click', anyClickPopupHandler);
       document.removeEventListener('keydown', closeEscPopupHandler);
