@@ -2,6 +2,7 @@
 (function () {
   var mapPin = document.querySelector('.map__pin--main');
   var mapBlock = document.querySelector('.map');
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var mapWidth = mapBlock.offsetWidth;
   var pinWidth = mapPin.offsetWidth;
   var pinHeight = mapPin.offsetHeight + 22;
@@ -57,4 +58,19 @@
     mapPin.addEventListener('mousedown', onPinMouseDownHandler);
   }
   initApp();
+
+  window.pinUtils = {
+    fillPins: function (ad) {
+      var pinElem = pinTemplate.cloneNode(true);
+      pinElem.style.left = ad.location.x + 'px';
+      pinElem.style.top = ad.location.y + 'px';
+      pinElem.querySelector('img').src = ad.author.avatar;
+      pinElem.querySelector('img').alt = ad.offer.title;
+      pinElem.addEventListener('click', function (evt) {
+        evt.preventDefault();
+        window.cardUtils.renderCard(ad);
+      });
+      return pinElem;
+    }
+  };
 })();
