@@ -47,7 +47,6 @@
     adFormCapacity.setCustomValidity('');
     customValidation.checkValidityCapacity(adFormCapacity, adFormRoomNumbers);
     var customValidityMessage = customValidation.getInvalidity();
-    console.log(customValidityMessage);
     if (customValidityMessage) {
       adFormCapacity.setCustomValidity(customValidityMessage);
     }
