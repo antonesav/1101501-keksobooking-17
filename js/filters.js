@@ -19,7 +19,6 @@
       }
       return item.offer[name].toString() === filterParams[name];
     });
-    // console.log(filteredAds);
   }
 
   // фильтрация features
@@ -41,17 +40,16 @@
         checkedFeatureElements.push(elem);
       }
     });
-    // console.log(checkedFeatureElements);
     return checkedFeatureElements;
   }
 
   function collectFilters(array, name, paramValue) {
-    return filterOffers(array, name) && getCheckedFeatures(array, paramValue);
+    return filterOffers(array, name).concat(getCheckedFeatures(array, paramValue));
   }
 
   function renderCollectFilters(arrayAds, nameElement, valueElement) {
+    window.cardUtils.renderCard(arrayAds[4]);
     removePinBlockChild();
-    console.log(collectFilters(arrayAds, nameElement, valueElement));
     window.cardUtils.renderAds(collectFilters(arrayAds, nameElement, valueElement));
   }
 
