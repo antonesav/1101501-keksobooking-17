@@ -7,7 +7,7 @@
       house: 5000,
       bungalo: 0
     },
-    copyAdsArray: [],
+    ads: [],
     MIN_MAP_Y: 130,
     MAX_MAP_Y: 630,
     ESC_KEYCODE: 27,

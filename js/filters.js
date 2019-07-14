@@ -9,7 +9,7 @@
   function housingChangeHandler(evt) {
     var name = evt.target.name;
     filterParams[name] = evt.target.value;
-    renderCollectFilters(window.globalUtils.copyAdsArray, name, filterParams[name]);
+    renderCollectFilters(window.globalUtils.ads, name, filterParams[name]);
   }
 
   // фильтрация housing

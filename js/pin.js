@@ -5,7 +5,8 @@
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var mapWidth = mapBlock.offsetWidth;
   var pinWidth = mapPin.offsetWidth;
-  var pinHeight = mapPin.offsetHeight + 22;
+  var PIN_AFTER_HEIGHT = 22;
+  var pinHeight = mapPin.offsetHeight + PIN_AFTER_HEIGHT;
   window.globalUtils.MAIN_PIN_START_COORDS = {
     x: mapPin.style.left,
     y: mapPin.style.top
@@ -67,10 +68,11 @@
   window.pinUtils = {
     fillPins: function (ad) {
       var pinElem = pinTemplate.cloneNode(true);
+      var pinImageElem = pinElem.querySelector('img');
       pinElem.style.left = ad.location.x + 'px';
       pinElem.style.top = ad.location.y + 'px';
-      pinElem.querySelector('img').src = ad.author.avatar;
-      pinElem.querySelector('img').alt = ad.offer.title;
+      pinImageElem.src = ad.author.avatar;
+      pinImageElem.alt = ad.offer.title;
       pinElem.addEventListener('click', function (evt) {
         evt.preventDefault();
         window.cardUtils.renderCard(ad);

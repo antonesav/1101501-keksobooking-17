@@ -17,6 +17,8 @@
   var fragment = document.createDocumentFragment();
   var errTemplateUpload = document.querySelector('#error').content.querySelector('.error');
   var successTemplateUpload = document.querySelector('#success').content.querySelector('.success');
+  var PALACE_VALUE = '100';
+  var PALACE_GUEST_VALUE = '0';
   var ValidMessages = {
     ERROR_MESSAGE0: 'Количество мест "не для гостей" соответствует количеству комнат в "100"',
     ERROR_MESSAGE1: 'В 1 комнате размещается только 1 гость',
@@ -29,7 +31,8 @@
     invalidity: [],
     checkValidityCapacity: function (capacity, rooms) {
       var roomValue = rooms.value;
-      if ((roomValue !== '100' && capacity.value === '0') || (roomValue === '100' && capacity.value !== '0')) {
+      if ((roomValue !== PALACE_VALUE && capacity.value === PALACE_GUEST_VALUE) ||
+        (roomValue === PALACE_VALUE && capacity.value !== PALACE_GUEST_VALUE)) {
         this.addInvalidity(ValidMessages.ERROR_MESSAGE0);
       } else if (capacity.value > roomValue) {
         this.addInvalidity(ValidMessages['ERROR_MESSAGE' + roomValue] || ValidMessages.ERROR_LIMIT);

@@ -4,6 +4,7 @@
   var filterContainer = document.querySelector('.map__filters-container');
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var fragment = document.createDocumentFragment();
+  var MAX_LENGTH_ADS = 5;
   var OfferType = {
     'flat': 'Квартира',
     'bungalo': 'Бунгало',
@@ -12,8 +13,8 @@
   };
 
   function successLoadHandler(data) {
-    window.globalUtils.copyAdsArray = data;
-    window.cardUtils.renderAds(window.globalUtils.copyAdsArray);
+    window.globalUtils.ads = data;
+    window.cardUtils.renderAds(window.globalUtils.ads);
   }
 
   var symbolClass = '--';
@@ -82,10 +83,12 @@
   // Заполнение указателей
   window.cardUtils = {
     renderAds: function (adsArray) {
-      var arrayAdsLength = adsArray.length > 5 ? 5 : adsArray.length;
-      for (var i = 0; i < arrayAdsLength; i++) {
-        fragment.appendChild(window.pinUtils.fillPins(adsArray[i]));
-      }
+      var arrayAdsLength = adsArray.length > MAX_LENGTH_ADS ? MAX_LENGTH_ADS : adsArray.length;
+      adsArray.forEach(function (item, index) {
+        if (index < arrayAdsLength) {
+          fragment.appendChild(window.pinUtils.fillPins(item));
+        }
+      });
       window.globalUtils.pinBlock.appendChild(fragment);
     },
 
