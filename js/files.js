@@ -67,7 +67,7 @@
   avatarFileChooser.addEventListener('change', avatarChooseHandler);
   photoFileChooser.addEventListener('change', photoChooseHandler);
 
-  window.loadUtils = {
+  window.files = {
     clearFormPhoto: function () {
       avatarPreview.src = DEFAULT_AVATAR_SRC;
       while (photoPreview.firstChild) {
