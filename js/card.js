@@ -105,7 +105,7 @@
     },
 
     renderFragmentAds: function () {
-      window.loadUtils.load(loadHandler, successLoadHandler, errorLoadHandler);
+      window.backend.load(loadHandler, successLoadHandler, errorLoadHandler);
     },
 
     renderCard: function (data) {

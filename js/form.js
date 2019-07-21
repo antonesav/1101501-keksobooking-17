@@ -122,7 +122,7 @@
 
     adForm.reset();
 
-    window.loadUtils.clearFormPhoto();
+    window.files.clearFormPhoto();
 
     window.data.mainPin.style.left = window.data.MAIN_PIN_START_COORDS.x;
     window.data.mainPin.style.top = window.data.MAIN_PIN_START_COORDS.y;
@@ -182,7 +182,7 @@
   }
 
   adForm.addEventListener('submit', function (evt) {
-    window.uploadUtils.upload(new FormData(adForm), successPost, errorPost);
+    window.backend.upload(new FormData(adForm), successPost, errorPost);
     evt.preventDefault();
   });
 })();
