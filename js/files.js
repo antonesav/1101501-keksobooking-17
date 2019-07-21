@@ -67,27 +67,7 @@
   avatarFileChooser.addEventListener('change', avatarChooseHandler);
   photoFileChooser.addEventListener('change', photoChooseHandler);
 
-  window.loadUtils = {
-    url: 'https://js.dump.academy/keksobooking/data',
-    load: function (data, onSuccess, onError) {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'json';
-      xhr.addEventListener('load', function () {
-        if (xhr.status === 200) {
-          data(xhr.response);
-          onSuccess('Данные успешно загружены');
-        }
-      });
-      xhr.addEventListener('error', function () {
-        onError('Произошла ошибка соединения');
-      });
-      xhr.addEventListener('timeout', function () {
-        onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-      });
-      xhr.timeout = window.data.XHR_TIMEOUT;
-      xhr.open('GET', window.loadUtils.url);
-      xhr.send();
-    },
+  window.files = {
     clearFormPhoto: function () {
       avatarPreview.src = DEFAULT_AVATAR_SRC;
       while (photoPreview.firstChild) {
