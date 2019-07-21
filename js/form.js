@@ -1,8 +1,7 @@
 'use strict';
 (function () {
+  var fragment = document.createDocumentFragment();
   var elementsMapFilters = document.querySelectorAll('.map__filters input, select, fieldset');
-  var mapPin = document.querySelector('.map__pin--main');
-  var mapBlock = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
   var elementsAdForm = document.querySelectorAll('.ad-form fieldset');
   var adFormType = document.querySelector('#type');
@@ -14,9 +13,11 @@
   var adFormRoomNumbers = adForm.querySelector('#room_number');
   var mainBlock = document.querySelector('main');
   var mainOverlay = document.querySelector('.map__overlay');
-  var fragment = document.createDocumentFragment();
+  var formResetButton = document.querySelector('.ad-form__reset');
   var errTemplateUpload = document.querySelector('#error').content.querySelector('.error');
   var successTemplateUpload = document.querySelector('#success').content.querySelector('.success');
+  var PALACE_VALUE = '100';
+  var PALACE_GUEST_VALUE = '0';
   var ValidMessages = {
     ERROR_MESSAGE0: 'Количество мест "не для гостей" соответствует количеству комнат в "100"',
     ERROR_MESSAGE1: 'В 1 комнате размещается только 1 гость',
@@ -29,10 +30,13 @@
     invalidity: [],
     checkValidityCapacity: function (capacity, rooms) {
       var roomValue = rooms.value;
-      if ((roomValue !== '100' && capacity.value === '0') || (roomValue === '100' && capacity.value !== '0')) {
+      if ((roomValue !== PALACE_VALUE && capacity.value === PALACE_GUEST_VALUE) ||
+        (roomValue === PALACE_VALUE && capacity.value !== PALACE_GUEST_VALUE)) {
         this.addInvalidity(ValidMessages.ERROR_MESSAGE0);
       } else if (capacity.value > roomValue) {
-        this.addInvalidity(ValidMessages['ERROR_MESSAGE' + roomValue] || ValidMessages.ERROR_LIMIT);
+        this.addInvalidity(ValidMessages['ERROR_MESSAGE' + roomValue]);
+      } else if (roomValue > capacity.value) {
+        this.addInvalidity(ValidMessages.ERROR_LIMIT);
       }
     },
     addInvalidity: function (message) {
@@ -73,7 +77,7 @@
   var offerTypeSelectHandler = function (evt) {
     var minPriceOfNight;
     var valueType = evt.target.value;
-    minPriceOfNight = window.globalUtils.OFFER_TYPES[valueType];
+    minPriceOfNight = window.data.OFFER_TYPES[valueType];
     adFormPrice.min = minPriceOfNight;
     adFormPrice.placeholder = minPriceOfNight;
   };
@@ -88,16 +92,18 @@
   // Приложение : активация, деактивация
   window.formUtils = {
     activate: function () {
-      mapBlock.classList.remove('map--faded');
+      window.data.mapBlock.classList.remove('map--faded');
       adForm.classList.remove('ad-form--disabled');
       statusAdForm(elementsAdForm, false);
-      statusMapFilters(elementsMapFilters, false);
       adFormType.addEventListener('change', offerTypeSelectHandler);
       adFormTimeIn.addEventListener('change', offerCheckInHandler);
       adFormTimeOut.addEventListener('change', offerCheckOutHandler);
     },
+    activatedMapFilters: function () {
+      statusMapFilters(elementsMapFilters, false);
+    },
     disabled: function () {
-      mapBlock.classList.add('map--faded');
+      window.data.mapBlock.classList.add('map--faded');
       adForm.classList.add('ad-form--disabled');
       statusAdForm(elementsAdForm, true);
       statusMapFilters(elementsMapFilters, true);
@@ -107,20 +113,23 @@
     }
   };
 
-  function resetApp(mainPin, overlay) {
-    var card = mapBlock.querySelector('.map__card');
-    mapBlock.removeChild(card);
+  formResetButton.addEventListener('click', resetApp);
+
+  function resetApp() {
+    window.cardUtils.removeCard();
 
     window.formUtils.disabled();
 
     adForm.reset();
 
-    mainPin.style.left = window.globalUtils.MAIN_PIN_START_COORDS.x;
-    mainPin.style.top = window.globalUtils.MAIN_PIN_START_COORDS.y;
+    window.loadUtils.clearFormPhoto();
 
-    Array.from(window.globalUtils.pinBlock.children).forEach(function (pinNode) {
-      if (pinNode !== mainPin && pinNode !== overlay) {
-        window.globalUtils.pinBlock.removeChild(pinNode);
+    window.data.mainPin.style.left = window.data.MAIN_PIN_START_COORDS.x;
+    window.data.mainPin.style.top = window.data.MAIN_PIN_START_COORDS.y;
+
+    Array.from(window.data.pinBlock.children).forEach(function (pinNode) {
+      if (pinNode !== window.data.mainPin && pinNode !== mainOverlay) {
+        window.data.pinBlock.removeChild(pinNode);
       }
     });
   }
@@ -131,29 +140,32 @@
     var closePopupButton = popup.querySelector('.error__button');
     mainBlock.appendChild(popup);
 
+    function removePopupAndHandler() {
+      mainBlock.removeChild(popup);
+      document.removeEventListener('keydown', closeEscPopupHandler);
+      document.removeEventListener('click', anyClickPopupHandler);
+    }
+
     function closeEscPopupHandler(evt) {
-      if (evt.keyCode === window.globalUtils.ESC_KEYCODE) {
-        mainBlock.removeChild(popup);
-        document.removeEventListener('keydown', closeEscPopupHandler);
-        document.removeEventListener('click', anyClickPopupHandler);
+      if (evt.keyCode === window.data.ESC_KEYCODE) {
+        if (template === successTemplateUpload) {
+          resetApp(window.data.mainPin, mainOverlay);
+        }
+        removePopupAndHandler();
       }
     }
 
     function anyClickPopupHandler() {
       if (template === successTemplateUpload) {
-        resetApp(mapPin, mainOverlay);
+        resetApp(window.data.mainPin, mainOverlay);
       }
-      mainBlock.removeChild(popup);
-      document.removeEventListener('click', anyClickPopupHandler);
-      document.removeEventListener('keydown', closeEscPopupHandler);
+      removePopupAndHandler();
     }
 
     if (closePopupButton) {
       closePopupButton.addEventListener('click', function (evt) {
         evt.preventDefault();
-        mainBlock.removeChild(popup);
-        document.removeEventListener('click', anyClickPopupHandler);
-        document.removeEventListener('keydown', closeEscPopupHandler);
+        removePopupAndHandler();
       });
     }
 
