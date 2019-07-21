@@ -1,65 +1,103 @@
 'use strict';
 (function () {
   var filtersBlock = document.querySelector('.map__filters');
-  var mapPin = document.querySelector('.map__pin--main');
-  var mainOverlay = document.querySelector('.map__overlay');
-  var filterParams = {};
-  var checkedFeatures = {};
+  var filterByType = document.querySelector('#housing-type');
+  var filterByPrice = document.querySelector('#housing-price');
+  var filterByRooms = document.querySelector('#housing-rooms');
+  var filterByGuests = document.querySelector('#housing-guests');
+  var featuresBlock = document.querySelector('.map__features');
+  var featuresBlockItems = featuresBlock.querySelectorAll('input[type=checkbox]');
+  var pinsBLock = document.querySelector('.map__pins');
+  var lastTimeout;
+  var FILTER_DELAY = 500;
+  var FILTER_PRICE_VALUE = {
+    middle: {
+      min: 10000,
+      max: 50000
+    },
+    low: {
+      min: 0,
+      max: 10000
+    },
+    high: {
+      min: 50000,
+      max: Infinity
+    }
+  };
 
-  function housingChangeHandler(evt) {
-    var name = evt.target.name;
-    filterParams[name] = evt.target.value;
-    renderCollectFilters(window.globalUtils.ads, name, filterParams[name]);
-  }
-
-  // фильтрация housing
-  function filterOffers(array, name) {
-    return array.filter(function (item) {
-      if (filterParams[name] === 'any') {
-        return item;
-      }
-      return item.offer[name].toString() === filterParams[name];
+  function initFilter() {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var card = document.querySelector('.map__card');
+    var featuresChecked = [].slice.call(featuresBlockItems).filter(function (item) {
+      return (item.checked === true);
     });
-  }
+    var filterObj = {
+      type: filterByType.value,
+      price: filterByPrice.value,
+      rooms: filterByRooms.value,
+      guests: filterByGuests.value,
+      features: featuresChecked.map(function (item) {
+        return item.value;
+      })
+    };
 
-  // фильтрация features
-  function getCheckedFeatures(array, valueElement) {
-    var checkedFeatureElements = [];
-
-    if (checkedFeatures[valueElement]) {
-      checkedFeatures[valueElement] = false;
-    } else {
-      checkedFeatures[valueElement] = true;
+    for (var key in filterObj) {
+      if (filterObj[key] === 'any') {
+        delete filterObj[key];
+      }
     }
 
-    array.forEach(function (elem) {
-      var arrayOffers = elem.offer.features;
-      var filteredFeatures = arrayOffers.filter(function (item) {
-        return checkedFeatures['' + item + ''] === true;
-      });
-      if (arrayOffers.length && arrayOffers.length === filteredFeatures.length) {
-        checkedFeatureElements.push(elem);
+    var filteredAds = window.data.ads.filter(function (item) {
+      var offer = item.offer;
+
+      if (filterObj.type && filterObj.type !== offer.type) {
+        return false;
       }
-    });
-    return checkedFeatureElements;
-  }
-  // Не понятно,как с этим работать
-  function collectFilters(array, name, paramValue) {
-    return filterOffers(array, name).concat(getCheckedFeatures(array, paramValue));
-  }
-
-  function renderCollectFilters(arrayAds, nameElement, valueElement) {
-    removePinBlockChild();
-    window.cardUtils.renderAds(collectFilters(arrayAds, nameElement, valueElement));
-  }
-
-  filtersBlock.addEventListener('change', housingChangeHandler);
-
-  function removePinBlockChild() {
-    Array.from(window.globalUtils.pinBlock.children).forEach(function (pinNode) {
-      if (pinNode !== mapPin && pinNode !== mainOverlay) {
-        window.globalUtils.pinBlock.removeChild(pinNode);
+      if (filterObj.price && !(FILTER_PRICE_VALUE[filterObj.price].min <= offer.price && offer.price <= FILTER_PRICE_VALUE[filterObj.price].max)) {
+        return false;
       }
+      if (filterObj.rooms && +filterObj.rooms !== offer.rooms) {
+        return false;
+      }
+      if (filterObj.guests && +filterObj.guests !== offer.guests) {
+        return false;
+      }
+      if (filterObj.features.length) {
+        return filterObj.features.every(function (elem) {
+          return (offer.features.indexOf(elem) !== -1);
+        });
+      }
+      return true;
     });
+
+    pins.forEach(function (item) {
+      pinsBLock.removeChild(item);
+    });
+
+    if (card) {
+      window.data.mapBlock.removeChild(card);
+    }
+
+    window.cardUtils.renderAds(filteredAds);
   }
+
+  function debounce(func) {
+    if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
+    lastTimeout = setTimeout(func, FILTER_DELAY);
+  }
+
+  filtersBlock.addEventListener('change', function (evt) {
+    if (evt.target.tagName === 'SELECT') {
+      debounce(initFilter);
+    }
+  });
+
+  featuresBlock.addEventListener('click', function (evt) {
+    if (evt.target.name === 'features') {
+      debounce(initFilter);
+    }
+  });
+
 })();

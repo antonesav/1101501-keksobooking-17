@@ -1,15 +1,13 @@
 'use strict';
 (function () {
-  var mapPin = document.querySelector('.map__pin--main');
-  var mapBlock = document.querySelector('.map');
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-  var mapWidth = mapBlock.offsetWidth;
-  var pinWidth = mapPin.offsetWidth;
-  var PIN_AFTER_HEIGHT = 22;
-  var pinHeight = mapPin.offsetHeight + PIN_AFTER_HEIGHT;
-  window.globalUtils.MAIN_PIN_START_COORDS = {
-    x: mapPin.style.left,
-    y: mapPin.style.top
+  var mapWidth = window.data.mapBlock.offsetWidth;
+  var pinWidth = window.data.mainPin.offsetWidth;
+  var PIN_AFTER_ELEMENT_HEIGHT = 22;
+  var pinHeight = window.data.mainPin.offsetHeight + PIN_AFTER_ELEMENT_HEIGHT;
+  window.data.MAIN_PIN_START_COORDS = {
+    x: window.data.mainPin.style.left,
+    y: window.data.mainPin.style.top
   };
 
   // Вычисление координат пина
@@ -36,22 +34,26 @@
         x: evtMove.clientX,
         y: evtMove.clientY
       };
-      var currentX = mapPin.offsetLeft - shift.x;
-      var currentY = mapPin.offsetTop - shift.y;
+      var currentX = window.data.mainPin.offsetLeft - shift.x;
+      var currentY = window.data.mainPin.offsetTop - shift.y;
       if (mapWidth - pinWidth > currentX && currentX > 0) {
-        mapPin.style.left = currentX + 'px';
+        window.data.mainPin.style.left = currentX + 'px';
       }
-      if (window.globalUtils.MAX_MAP_Y > currentY && currentY > window.globalUtils.MIN_MAP_Y) {
-        mapPin.style.top = currentY + 'px';
+      if (window.data.MAX_MAP_Y - pinHeight > currentY && currentY > window.data.MIN_MAP_Y) {
+        window.data.mainPin.style.top = currentY + 'px';
       }
     }
 
     // Слушаем mouseUp, отменяем события перетаскивания, активируем страницу
     function mouseUpHandler(evtUp) {
       evtUp.preventDefault();
+
+      if (window.data.mapBlock.classList.contains('map--faded')) {
+        window.cardUtils.renderFragmentAds();
+      }
+
       window.formUtils.activate();
-      window.cardUtils.renderFragmentAds();
-      window.formUtils.setAddress(getMainPinCoordinate(mapPin, pinWidth, pinHeight));
+      window.formUtils.setAddress(getMainPinCoordinate(window.data.mainPin, pinWidth, pinHeight));
       document.removeEventListener('mousemove', mouseMoveHandler);
       document.removeEventListener('mouseup', mouseUpHandler);
     }
@@ -61,7 +63,7 @@
   };
   function initApp() {
     window.formUtils.disabled();
-    mapPin.addEventListener('mousedown', onPinMouseDownHandler);
+    window.data.mainPin.addEventListener('mousedown', onPinMouseDownHandler);
   }
   initApp();
 
